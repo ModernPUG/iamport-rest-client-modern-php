@@ -6,7 +6,7 @@
   },
   "autoload": {
     "psr-4": {
-      "ModernPUG\\IAmPort\\": "src/"
+      "ModernPUG\\Iamport\\": "src/"
     }
   },
   "minimum-stability": "dev"
