@@ -1,0 +1,13 @@
+{
+  "name": "modern-pug/iamport-rest-client-modern-php",
+  "license": "MIT",
+  "require": {
+    "php": ">=5.5.9"
+  },
+  "autoload": {
+    "psr-4": {
+      "ModernPUG\\IAmPort\\": "src/"
+    }
+  },
+  "minimum-stability": "dev"
+}
