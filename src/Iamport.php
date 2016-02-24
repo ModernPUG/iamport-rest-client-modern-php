@@ -90,7 +90,7 @@ class Iamport
             $cancel_data = array_intersect_key($data, $keys);
             if ($data['imp_uid']) {
                 $cancel_data['imp_uid'] = $data['imp_uid'];
-            } else if ($data['merchant_uid']) {
+            } elseif ($data['merchant_uid']) {
                 $cancel_data['merchant_uid'] = $data['merchant_uid'];
             } else {
                 return new IamportResult(false, null, array('code' => '', 'message' => '취소하실 imp_uid 또는 merchant_uid 중 하나를 지정하셔야 합니다.'));
