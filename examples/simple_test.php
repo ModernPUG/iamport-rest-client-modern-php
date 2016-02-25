@@ -1,22 +1,21 @@
 <?php
-
-require_once '../vendor/autoload.php';
+require_once('../vendor/autoload.php');
 
 // config
 (new Dotenv\Dotenv(__DIR__))->load();
 $key = getenv('IAMPORT_KEY');
 $secret = getenv('IAMPORT_SECRET');
 
-$iamport = new ModernPUG\Iamport\Iamport($key, $secret);
+$iamport = new ModernPUG\Iamport\IamportApi($key, $secret);
 $payments = $iamport->getPaymentStatus('all');
-echo 'PAYMENTS_STATUS<br>';
+echo "PAYMENTS_STATUS<br>";
 dump($payments);
 
 $selectedItem = $payments[0];
 $paidItem = '';
 foreach ($payments as $item) {
     if ($item->status == 'paid') {
-        echo 'PAID ITEM<br>';
+        echo "PAID ITEM<br>";
         $paidItem = $item;
         break;
     }

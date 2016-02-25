@@ -4,7 +4,7 @@ namespace ModernPUG\Iamport;
 
 use Exception;
 
-class IamportOld
+class IamportApiOld
 {
     const GET_TOKEN_URL = 'https://api.iamport.kr/users/getToken';
     const GET_PAYMENT_URL = 'https://api.iamport.kr/payments/';
