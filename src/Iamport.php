@@ -3,6 +3,7 @@
 namespace ModernPUG\Iamport;
 
 use Exception;
+use GuzzleHttp\Client as Guzzle;
 
 class Iamport
 {
@@ -25,14 +26,19 @@ class Iamport
     private $expired_at = null;
     private $now = null;
 
-    public function __construct($imp_key, $imp_secret)
+    private $guzzle;
+
+    public function __construct($imp_key, $imp_secret, Guzzle $guzzle = null)
     {
         $this->imp_key = $imp_key;
         $this->imp_secret = $imp_secret;
+        $this->guzzle = $guzzle ?: new Guzzle;
     }
 
     public function findByImpUID($imp_uid)
     {
+        //$this->guzzle;
+        /*
         try {
             $response = $this->getResponse(self::GET_PAYMENT_URL . $imp_uid);
 
@@ -45,6 +51,7 @@ class Iamport
         } catch (Exception $e) {
             return new IamportResult(false, null, array('code' => $e->getCode(), 'message' => $e->getMessage()));
         }
+        */
     }
 
     public function findByMerchantUID($merchant_uid)
