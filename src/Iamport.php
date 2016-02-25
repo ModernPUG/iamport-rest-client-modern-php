@@ -113,7 +113,10 @@ class Iamport
 
     public function getPaymentByImpId($id)
     {
-        $response = $this->httpGet("https://api.iamport.kr/payments/$id");
+        $response = $this->httpGet(
+            "https://api.iamport.kr/payments/$id"
+        );
+
         $payment_data = new IamportPayment($response);
 
         return new IamportResult(true, $payment_data);
@@ -121,7 +124,10 @@ class Iamport
 
     public function getPaymentByMerchantId($id)
     {
-        $response = $this->httpGet("https://api.iamport.kr/payments/find/$id");
+        $response = $this->httpGet(
+            "https://api.iamport.kr/payments/find/$id"
+        );
+
         $payment_data = new IamportPayment($response);
 
         return new IamportResult(true, $payment_data);
@@ -129,26 +135,29 @@ class Iamport
 
     public function getPaymentList($status = 'all', $page = null)
     {
-        $response = $this->httpGet("https://api.iamport.kr/payments/status/$status".($page ? "?page=$page" : ''));
+        $response = $this->httpGet(
+            "https://api.iamport.kr/payments/status/$status".($page ? "?page=$page" : '')
+        );
 
-        return $response->list;
+        return $response;
     }
 
     public function cancel($data)
     {
-        $keys = array_flip(['amount', 'reason', 'refund_holder', 'refund_bank', 'refund_account']);
-        $cancel_data = array_intersect_key($data, $keys);
-        if ($data['imp_uid']) {
-            $cancel_data['imp_uid'] = $data['imp_uid'];
-        } elseif ($data['merchant_uid']) {
-            $cancel_data['merchant_uid'] = $data['merchant_uid'];
-        } else {
+        if (!isset($data['imp_uid']) && !isset($data['merchant_uid'])) {
             return new IamportResult(false, null, [
                 'code' => '',
                 'message' => '취소하실 imp_uid 또는 merchant_uid 중 하나를 지정하셔야 합니다.',
             ]);
         }
-        $response = $this->httpPost('https://api.iamport.kr/payments/cancel/', $cancel_data);
+
+        $response = $this->httpPost(
+            'https://api.iamport.kr/payments/cancel/',
+            $this->only($data, [
+                'amount', 'reason', 'refund_holder', 'refund_bank', 'refund_account',
+            ])
+        );
+
         $payment_data = new IamportPayment($response);
 
         return new IamportResult(true, $payment_data);
@@ -156,30 +165,37 @@ class Iamport
 
     public function preparePayment($data)
     {
-        $keys = array_flip(['token', 'merchant_uid', 'amount']);
-        $data = array_intersect_key($data, $keys);
-        $response = $this->httpPost('https://api.iamport.kr/payments/prepare/', $data);
+        $response = $this->httpPost(
+            'https://api.iamport.kr/payments/prepare/',
+            $this->only($data, [
+                'token', 'merchant_uid', 'amount',
+            ])
+        );
 
         return $response;
     }
 
     public function getPreparePayment($merchant_uid)
     {
-        $response = $this->httpGet("https://api.iamport.kr/payments/prepare/$merchant_uid");
+        $response = $this->httpGet(
+            "https://api.iamport.kr/payments/prepare/$merchant_uid"
+        );
 
         return $response;
     }
 
     public function sbcr_onetime($data)
     {
-        $keys = array_flip([
-            'token',
-            'merchant_uid', 'amount', 'vat', 'card_number', 'expiry', 'birth', 'pwd_2digit', 'remember_me',
-            'customer_uid', 'name',
-            'buyer_name', 'buyer_email', 'buyer_tel', 'buyer_addr', 'buyer_postcode',
-        ]);
-        $data = array_intersect_key($data, $keys);
-        $response = $this->httpPost('https://api.iamport.kr/subscribe/payments/onetime/', $data);
+        $response = $this->httpPost(
+            'https://api.iamport.kr/subscribe/payments/onetime/',
+            $this->only($data, [
+                'token',
+                'merchant_uid', 'amount', 'vat', 'card_number', 'expiry', 'birth', 'pwd_2digit', 'remember_me',
+                'customer_uid', 'name',
+                'buyer_name', 'buyer_email', 'buyer_tel', 'buyer_addr', 'buyer_postcode',
+            ])
+        );
+
         $payment_data = new IamportPayment($response);
 
         return new IamportResult(true, $payment_data);
@@ -187,59 +203,78 @@ class Iamport
 
     public function sbcr_again($data)
     {
-        $keys = array_flip([
-            'token',
-            'customer_uid', 'merchant_uid', 'amount', 'vat', 'name',
-            'buyer_name', 'buyer_email', 'buyer_tel', 'buyer_addr', 'buyer_postcode',
-        ]);
-        $data = array_intersect_key($data, $keys);
-        $response = $this->httpPost('https://api.iamport.kr/subscribe/payments/again/', $data);
+        $response = $this->httpPost(
+            'https://api.iamport.kr/subscribe/payments/again/',
+            $this->only($data, [
+                'token',
+                'customer_uid', 'merchant_uid', 'amount', 'vat', 'name',
+                'buyer_name', 'buyer_email', 'buyer_tel', 'buyer_addr', 'buyer_postcode',
+            ])
+        );
+
         $payment_data = new IamportPayment($response);
 
         return new IamportResult(true, $payment_data);
     }
 
-    //TODO: schedules param 보내기 테스트 필요
     public function sbcr_schedule($data)
     {
-        $keys = array_flip([
-            'token', 'customer_uid', 'checking_amount', 'card_number', 'expiry', 'birth', 'pwd_2digit', 'schedules',
-        ]);
-        $data = array_intersect_key($data, $keys);
-        $response = $this->httpPost('https://api.iamport.kr/subscribe/payments/schedule/', $data);
+        //TODO: schedules param 보내기 테스트 필요
+        $response = $this->httpPost(
+            'https://api.iamport.kr/subscribe/payments/schedule/',
+            $this->only($data, [
+                'token',
+                'customer_uid', 'checking_amount', 'card_number', 'expiry', 'birth', 'pwd_2digit', 'schedules',
+            ])
+        );
 
         return $response;
     }
 
     public function sbcr_unschedule($data)
     {
-        $keys = array_flip(['token', 'customer_uid', 'merchant_uid']);
-        $data = array_intersect_key($data, $keys);
-        $response = $this->httpPost('https://api.iamport.kr/subscribe/payments/unschedule/', $data);
+        $response = $this->httpPost(
+            'https://api.iamport.kr/subscribe/payments/unschedule/',
+            $this->only($data, [
+                'token', 'customer_uid', 'merchant_uid',
+            ])
+        );
 
         return $response;
     }
 
     public function delete_subscribe_customers($customer_uid)
     {
-        $response = $this->httpDelete("https://api.iamport.kr/subscribe/customers/$customer_uid", null);
+        $response = $this->httpDelete(
+            "https://api.iamport.kr/subscribe/customers/$customer_uid"
+        );
 
         return $response;
     }
 
     public function get_subscribe_customers($customer_uid)
     {
-        $response = $this->httpGet("https://api.iamport.kr/subscribe/customers/$customer_uid");
+        $response = $this->httpGet(
+            "https://api.iamport.kr/subscribe/customers/$customer_uid"
+        );
 
         return $response;
     }
 
     public function post_subscribe_customers($customer_uid, $data)
     {
-        $keys = array_flip(['token', 'card_number', 'expiry', 'birth', 'pwd_2digit']);
-        $data = array_intersect_key($data, $keys);
-        $response = $this->httpPost("https://api.iamport.kr/subscribe/customers/$customer_uid", $data);
+        $response = $this->httpPost(
+            "https://api.iamport.kr/subscribe/customers/$customer_uid",
+            $this->only($data, [
+                'token', 'card_number', 'expiry', 'birth', 'pwd_2digit',
+            ])
+        );
 
         return $response;
+    }
+
+    private function only($array, $keys)
+    {
+        return array_intersect_key($array, array_flip((array) $keys));
     }
 }
