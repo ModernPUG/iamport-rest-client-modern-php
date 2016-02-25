@@ -44,6 +44,7 @@ class IamportApi
             ];
         }
 
+        //TODO: 얘는 post 인데 token 이란 것이 없다. token 은 무엇인가?
         return $this->client->httpPost(
             'https://api.iamport.kr/payments/cancel/',
             $this->only($data, [
@@ -76,7 +77,8 @@ class IamportApi
             'https://api.iamport.kr/subscribe/payments/onetime/',
             $this->only($data, [
                 'token',
-                'merchant_uid', 'amount', 'vat', 'card_number', 'expiry', 'birth', 'pwd_2digit', 'remember_me',
+                'merchant_uid', 'amount', 'vat',
+                'card_number', 'expiry', 'birth', 'pwd_2digit', 'remember_me',
                 'customer_uid', 'name',
                 'buyer_name', 'buyer_email', 'buyer_tel', 'buyer_addr', 'buyer_postcode',
             ])
@@ -89,7 +91,8 @@ class IamportApi
             'https://api.iamport.kr/subscribe/payments/again/',
             $this->only($data, [
                 'token',
-                'customer_uid', 'merchant_uid', 'amount', 'vat', 'name',
+                'customer_uid',
+                'merchant_uid', 'amount', 'vat', 'name',
                 'buyer_name', 'buyer_email', 'buyer_tel', 'buyer_addr', 'buyer_postcode',
             ])
         );
@@ -102,7 +105,9 @@ class IamportApi
             'https://api.iamport.kr/subscribe/payments/schedule/',
             $this->only($data, [
                 'token',
-                'customer_uid', 'checking_amount', 'card_number', 'expiry', 'birth', 'pwd_2digit', 'schedules',
+                'customer_uid', 'checking_amount',
+                'card_number', 'expiry', 'birth', 'pwd_2digit',
+                'schedules',
             ])
         );
     }
