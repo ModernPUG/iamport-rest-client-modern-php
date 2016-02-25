@@ -38,7 +38,6 @@ class Iamport
     public function findByImpUID($imp_uid)
     {
         //$this->guzzle;
-        /*
         try {
             $response = $this->getResponse(self::GET_PAYMENT_URL . $imp_uid);
 
@@ -51,7 +50,6 @@ class Iamport
         } catch (Exception $e) {
             return new IamportResult(false, null, array('code' => $e->getCode(), 'message' => $e->getMessage()));
         }
-        */
     }
 
     public function findByMerchantUID($merchant_uid)
