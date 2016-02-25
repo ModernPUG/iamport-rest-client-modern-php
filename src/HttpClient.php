@@ -13,7 +13,7 @@ class HttpClient
     private $cache;
     private $client;
 
-    public function __construct($imp_key, $imp_secret, Cache $cache, Guzzle $client = null)
+    public function __construct($imp_key, $imp_secret, CacheInterface $cache, Guzzle $client = null)
     {
         $this->imp_key = $imp_key;
         $this->imp_secret = $imp_secret;
@@ -53,9 +53,9 @@ class HttpClient
     private function getAccessCode()
     {
         try {
-            $access_token = $this->cache->getAccessToken();
-            if ($access_token) {
-                return $access_token;
+            $accessToken = $this->cache->getAccessToken();
+            if ($accessToken) {
+                return $accessToken;
             }
 
             $response = $this->httpJsonCall(
@@ -68,11 +68,11 @@ class HttpClient
             );
             $response = $response->response;
 
-            $access_token = $response->access_token;
+            $accessToken = $response->access_token;
             $expiresAt = time() + $response->expired_at - $response->now;
-            $this->cache->rememberAccessToken($access_token, $expiresAt);
+            $this->cache->rememberAccessToken($accessToken, $expiresAt);
 
-            return $access_token;
+            return $accessToken;
         } catch (Exception $e) {
             //todo: Exception 관련 처리
             //throw new IamportAuthException('[API 인증오류] '.$e->getMessage(), $e->getCode());

@@ -2,7 +2,7 @@
 
 namespace ModernPUG\Iamport;
 
-class Cache
+class Cache implements CacheInterface
 {
     private $expiresAt = null;
     private $accessToken = null;
@@ -15,6 +15,8 @@ class Cache
         }
         $this->expiresAt = null;
         $this->accessToken = null;
+
+        return null;
     }
 
     public function rememberAccessToken($accessToken, $expiresAt)

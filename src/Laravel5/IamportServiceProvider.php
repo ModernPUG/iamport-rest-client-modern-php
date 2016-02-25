@@ -3,6 +3,7 @@
 namespace ModernPUG\Iamport\Laravel5;
 
 use Illuminate\Support\ServiceProvider;
+use ModernPUG\Iamport\HttpClient;
 use ModernPUG\Iamport\IamportApi;
 
 class IamportServiceProvider extends ServiceProvider
@@ -20,7 +21,10 @@ class IamportServiceProvider extends ServiceProvider
             $key = config('iamport.rest-client.key');
             $secret = config('iamport.rest-client.secret');
 
-            return new IamportApi($key, $secret);
+            $cache = new LaravelCache();
+            $httpClient = new HttpClient($key, $secret, $cache);
+
+            return new IamportApi($key, $secret, $httpClient);
         });
     }
 }
