@@ -93,7 +93,8 @@ class Iamport
             } elseif ($data['merchant_uid']) {
                 $cancel_data['merchant_uid'] = $data['merchant_uid'];
             } else {
-                return new IamportResult(false, null, array('code' => '', 'message' => '취소하실 imp_uid 또는 merchant_uid 중 하나를 지정하셔야 합니다.'));
+                return new IamportResult(false, null,
+                    array('code' => '', 'message' => '취소하실 imp_uid 또는 merchant_uid 중 하나를 지정하셔야 합니다.'));
             }
             $response = $this->postResponse(
                 self::CANCEL_PAYMENT_URL,
@@ -151,7 +152,24 @@ class Iamport
     {
         try {
             $access_token = $this->getAccessCode();
-            $keys = array_flip(array('token', 'merchant_uid', 'amount', 'vat', 'card_number', 'expiry', 'birth', 'pwd_2digit', 'remember_me', 'customer_uid', 'name', 'buyer_name', 'buyer_email', 'buyer_tel', 'buyer_addr', 'buyer_postcode'));
+            $keys = array_flip(array(
+                'token',
+                'merchant_uid',
+                'amount',
+                'vat',
+                'card_number',
+                'expiry',
+                'birth',
+                'pwd_2digit',
+                'remember_me',
+                'customer_uid',
+                'name',
+                'buyer_name',
+                'buyer_email',
+                'buyer_tel',
+                'buyer_addr',
+                'buyer_postcode'
+            ));
             $onetime_data = array_intersect_key($data, $keys);
             $response = $this->postResponse(
                 self::SBCR_ONETIME_PAYMENT_URL,
@@ -173,7 +191,19 @@ class Iamport
     {
         try {
             $access_token = $this->getAccessCode();
-            $keys = array_flip(array('token', 'customer_uid', 'merchant_uid', 'amount', 'vat', 'name', 'buyer_name', 'buyer_email', 'buyer_tel', 'buyer_addr', 'buyer_postcode'));
+            $keys = array_flip(array(
+                'token',
+                'customer_uid',
+                'merchant_uid',
+                'amount',
+                'vat',
+                'name',
+                'buyer_name',
+                'buyer_email',
+                'buyer_tel',
+                'buyer_addr',
+                'buyer_postcode'
+            ));
             $onetime_data = array_intersect_key($data, $keys);
             $response = $this->postResponse(
                 self::SBCR_AGAIN_PAYMENT_URL,
@@ -196,7 +226,16 @@ class Iamport
     {
         try {
             $access_token = $this->getAccessCode();
-            $keys = array_flip(array('token', 'customer_uid', 'checking_amount', 'card_number', 'expiry', 'birth', 'pwd_2digit', 'schedules'));
+            $keys = array_flip(array(
+                'token',
+                'customer_uid',
+                'checking_amount',
+                'card_number',
+                'expiry',
+                'birth',
+                'pwd_2digit',
+                'schedules'
+            ));
             $onetime_data = array_intersect_key($data, $keys);
             $response = $this->postResponse(
                 self::SBCR_SCHEDULE_PAYMENT_URL,
@@ -306,9 +345,15 @@ class Iamport
         $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $r = json_decode(trim($body));
         curl_close($ch);
-        if ($error_code > 0) throw new Exception("Request Error(HTTP STATUS : " . $status_code . ")", $error_code);
-        if (empty($r)) throw new Exception("API서버로부터 응답이 올바르지 않습니다. " . $body, 1);
-        if ($r->code !== 0) throw new IamportRequestException($r);
+        if ($error_code > 0) {
+            throw new Exception("Request Error(HTTP STATUS : " . $status_code . ")", $error_code);
+        }
+        if (empty($r)) {
+            throw new Exception("API 서버로부터 응답이 올바르지 않습니다. " . $body, 1);
+        }
+        if ($r->code !== 0) {
+            throw new IamportRequestException($r);
+        }
         return $r->response;
     }
 
@@ -329,9 +374,15 @@ class Iamport
         $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $r = json_decode(trim($body));
         curl_close($ch);
-        if ($error_code > 0) throw new Exception("AccessCode Error(HTTP STATUS : " . $status_code . ")", $error_code);
-        if (empty($r)) throw new Exception("API서버로부터 응답이 올바르지 않습니다. " . $body, 1);
-        if ($r->code !== 0) throw new IamportRequestException($r);
+        if ($error_code > 0) {
+            throw new Exception("AccessCode Error(HTTP STATUS : " . $status_code . ")", $error_code);
+        }
+        if (empty($r)) {
+            throw new Exception("API 서버로부터 응답이 올바르지 않습니다. " . $body, 1);
+        }
+        if ($r->code !== 0) {
+            throw new IamportRequestException($r);
+        }
         return $r->response;
     }
 
@@ -352,9 +403,15 @@ class Iamport
         $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $r = json_decode(trim($body));
         curl_close($ch);
-        if ($error_code > 0) throw new Exception("AccessCode Error(HTTP STATUS : " . $status_code . ")", $error_code);
-        if (empty($r)) throw new Exception("API서버로부터 응답이 올바르지 않습니다. " . $body, 1);
-        if ($r->code !== 0) throw new IamportRequestException($r);
+        if ($error_code > 0) {
+            throw new Exception("AccessCode Error(HTTP STATUS : " . $status_code . ")", $error_code);
+        }
+        if (empty($r)) {
+            throw new Exception("API서버로부터 응답이 올바르지 않습니다. " . $body, 1);
+        }
+        if ($r->code !== 0) {
+            throw new IamportRequestException($r);
+        }
         return $r->response;
     }
 
@@ -362,7 +419,9 @@ class Iamport
     {
         try {
             $now = time();
-            if ($now < $this->expired_at && !empty($this->access_token)) return $this->access_token;
+            if ($now < $this->expired_at && !empty($this->access_token)) {
+                return $this->access_token;
+            }
             $this->expired_at = null;
             $this->access_token = null;
             $response = $this->postResponse(
@@ -377,7 +436,7 @@ class Iamport
             $this->access_token = $response->access_token;
             return $response->access_token;
         } catch (Exception $e) {
-            throw new IamportAuthException('[API인증오류] ' . $e->getMessage(), $e->getCode());
+            throw new IamportAuthException('[API 인증오류] ' . $e->getMessage(), $e->getCode());
         }
     }
 }

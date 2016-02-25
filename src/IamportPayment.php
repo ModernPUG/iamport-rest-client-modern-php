@@ -22,7 +22,9 @@ class IamportPayment
 
     public function getCustomData($name = null)
     {
-        if (is_null($name)) return $this->custom_data;
+        if (is_null($name)) {
+            return $this->custom_data;
+        }
         return $this->custom_data->{$name};
     }
 }
