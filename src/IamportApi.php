@@ -38,10 +38,10 @@ class IamportApi
     {
         //TODO: imp_uid, merchant_uid 둘 다 없는 경우 서버에서 무엇을 주길래 이런 처리가 되어 있을까?
         if (!isset($data['imp_uid']) && !isset($data['merchant_uid'])) {
-            return new IamportResult(false, null, [
+            return [
                 'code' => '',
                 'message' => '취소하실 imp_uid 또는 merchant_uid 중 하나를 지정하셔야 합니다.',
-            ]);
+            ];
         }
 
         return $this->client->httpPost(
@@ -57,7 +57,8 @@ class IamportApi
         return $this->client->httpPost(
             'https://api.iamport.kr/payments/prepare/',
             $this->only($data, [
-                'token', 'merchant_uid', 'amount',
+                'token',
+                'merchant_uid', 'amount',
             ])
         );
     }
