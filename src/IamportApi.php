@@ -6,11 +6,9 @@ class IamportApi
 {
     private $client;
 
-    public function __construct($imp_key, $imp_secret, IamportHttpClient $client = null)
+    public function __construct($imp_key, $imp_secret, HttpClient $client = null)
     {
-        $this->imp_key = $imp_key;
-        $this->imp_secret = $imp_secret;
-        $this->client = $client ?: new IamportHttpClient($imp_key, $imp_secret);
+        $this->client = $client ?: new HttpClient($imp_key, $imp_secret, new Cache());
     }
 
     public function getPaymentByImpId($id)
