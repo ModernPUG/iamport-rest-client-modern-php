@@ -1,13 +1,17 @@
 {
-  "name": "modern-pug/iamport-rest-client-modern-php",
-  "license": "MIT",
-  "require": {
-    "php": ">=5.5.9"
-  },
-  "autoload": {
-    "psr-4": {
-      "ModernPUG\\Iamport\\": "src/"
+    "name": "modern-pug/iamport-rest-client-modern-php",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.5.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "ModernPUG\\Iamport\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "require-dev": {
+        "vlucas/phpdotenv": "^2.2",
+        "symfony/var-dumper": "^3.0"
     }
-  },
-  "minimum-stability": "dev"
 }
