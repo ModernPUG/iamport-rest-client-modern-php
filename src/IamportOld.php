@@ -34,9 +34,10 @@ class IamportOld
     public function findByImpUID($imp_uid)
     {
         try {
-            $response = $this->getResponse(self::GET_PAYMENT_URL . $imp_uid);
+            $response = $this->getResponse(self::GET_PAYMENT_URL.$imp_uid);
 
             $payment_data = new IamportPayment($response);
+
             return new IamportResult(true, $payment_data);
         } catch (IamportAuthException $e) {
             return new IamportResult(false, null, array('code' => $e->getCode(), 'message' => $e->getMessage()));
@@ -50,9 +51,10 @@ class IamportOld
     public function findByMerchantUID($merchant_uid)
     {
         try {
-            $response = $this->getResponse(self::FIND_PAYMENT_URL . $merchant_uid);
+            $response = $this->getResponse(self::FIND_PAYMENT_URL.$merchant_uid);
 
             $payment_data = new IamportPayment($response);
+
             return new IamportResult(true, $payment_data);
         } catch (IamportAuthException $e) {
             return new IamportResult(false, null, array('code' => $e->getCode(), 'message' => $e->getMessage()));
@@ -66,9 +68,9 @@ class IamportOld
     public function getPaymentStatus($payment_status = 'all', $page = null)
     {
         try {
-            $request_url = self::GET_PAYMENT_STATUS_URL . $payment_status;
+            $request_url = self::GET_PAYMENT_STATUS_URL.$payment_status;
             if ($page) {
-                $request_url .= '?page=' . $page;
+                $request_url .= '?page='.$page;
             }
             $response = $this->getResponse($request_url);
 
@@ -99,9 +101,10 @@ class IamportOld
             $response = $this->postResponse(
                 self::CANCEL_PAYMENT_URL,
                 $cancel_data,
-                array(self::TOKEN_HEADER . ': ' . $access_token)
+                array(self::TOKEN_HEADER.': '.$access_token)
             );
             $payment_data = new IamportPayment($response);
+
             return new IamportResult(true, $payment_data);
         } catch (IamportAuthException $e) {
             return new IamportResult(false, null, array('code' => $e->getCode(), 'message' => $e->getMessage()));
@@ -121,8 +124,9 @@ class IamportOld
             $response = $this->postResponse(
                 self::PREPARE_PAYMENT_URL,
                 $onetime_data,
-                array(self::TOKEN_HEADER . ': ' . $access_token)
+                array(self::TOKEN_HEADER.': '.$access_token)
             );
+
             return $response;
         } catch (IamportAuthException $e) {
             return new IamportResult(false, null, array('code' => $e->getCode(), 'message' => $e->getMessage()));
@@ -136,8 +140,9 @@ class IamportOld
     public function getPreparePayment($merchant_uid)
     {
         try {
-            $request_url = self::PREPARE_PAYMENT_URL . $merchant_uid;
+            $request_url = self::PREPARE_PAYMENT_URL.$merchant_uid;
             $response = $this->getResponse($request_url);
+
             return $response;
         } catch (IamportAuthException $e) {
             return new IamportResult(false, null, array('code' => $e->getCode(), 'message' => $e->getMessage()));
@@ -168,15 +173,16 @@ class IamportOld
                 'buyer_email',
                 'buyer_tel',
                 'buyer_addr',
-                'buyer_postcode'
+                'buyer_postcode',
             ));
             $onetime_data = array_intersect_key($data, $keys);
             $response = $this->postResponse(
                 self::SBCR_ONETIME_PAYMENT_URL,
                 $onetime_data,
-                array(self::TOKEN_HEADER . ': ' . $access_token)
+                array(self::TOKEN_HEADER.': '.$access_token)
             );
             $payment_data = new IamportPayment($response);
+
             return new IamportResult(true, $payment_data);
         } catch (IamportAuthException $e) {
             return new IamportResult(false, null, array('code' => $e->getCode(), 'message' => $e->getMessage()));
@@ -202,15 +208,16 @@ class IamportOld
                 'buyer_email',
                 'buyer_tel',
                 'buyer_addr',
-                'buyer_postcode'
+                'buyer_postcode',
             ));
             $onetime_data = array_intersect_key($data, $keys);
             $response = $this->postResponse(
                 self::SBCR_AGAIN_PAYMENT_URL,
                 $onetime_data,
-                array(self::TOKEN_HEADER . ': ' . $access_token)
+                array(self::TOKEN_HEADER.': '.$access_token)
             );
             $payment_data = new IamportPayment($response);
+
             return new IamportResult(true, $payment_data);
         } catch (IamportAuthException $e) {
             return new IamportResult(false, null, array('code' => $e->getCode(), 'message' => $e->getMessage()));
@@ -234,14 +241,15 @@ class IamportOld
                 'expiry',
                 'birth',
                 'pwd_2digit',
-                'schedules'
+                'schedules',
             ));
             $onetime_data = array_intersect_key($data, $keys);
             $response = $this->postResponse(
                 self::SBCR_SCHEDULE_PAYMENT_URL,
                 $onetime_data,
-                array(self::TOKEN_HEADER . ': ' . $access_token)
+                array(self::TOKEN_HEADER.': '.$access_token)
             );
+
             return $response;
         } catch (IamportAuthException $e) {
             return new IamportResult(false, null, array('code' => $e->getCode(), 'message' => $e->getMessage()));
@@ -261,8 +269,9 @@ class IamportOld
             $response = $this->postResponse(
                 self::SBCR_UNSCHEDULE_PAYMENT_URL,
                 $onetime_data,
-                array(self::TOKEN_HEADER . ': ' . $access_token)
+                array(self::TOKEN_HEADER.': '.$access_token)
             );
+
             return $response;
         } catch (IamportAuthException $e) {
             return new IamportResult(false, null, array('code' => $e->getCode(), 'message' => $e->getMessage()));
@@ -280,10 +289,11 @@ class IamportOld
             $keys = array_flip(array('token'));
             $onetime_data = array_intersect_key(array(), $keys);
             $response = $this->deleteResponse(
-                self::SBCR_CUSTOMER_URL . $customer_uid,
+                self::SBCR_CUSTOMER_URL.$customer_uid,
                 $onetime_data,
-                array(self::TOKEN_HEADER . ': ' . $access_token)
+                array(self::TOKEN_HEADER.': '.$access_token)
             );
+
             return $response;
         } catch (IamportAuthException $e) {
             return new IamportResult(false, null, array('code' => $e->getCode(), 'message' => $e->getMessage()));
@@ -297,8 +307,9 @@ class IamportOld
     public function get_subscribe_customers($customer_uid)
     {
         try {
-            $request_url = self::SBCR_CUSTOMER_URL . $customer_uid;
+            $request_url = self::SBCR_CUSTOMER_URL.$customer_uid;
             $response = $this->getResponse($request_url);
+
             return $response;
         } catch (IamportAuthException $e) {
             return new IamportResult(false, null, array('code' => $e->getCode(), 'message' => $e->getMessage()));
@@ -316,10 +327,11 @@ class IamportOld
             $keys = array_flip(array('token', 'card_number', 'expiry', 'birth', 'pwd_2digit'));
             $onetime_data = array_intersect_key($data, $keys);
             $response = $this->postResponse(
-                self::SBCR_CUSTOMER_URL . $customer_uid,
+                self::SBCR_CUSTOMER_URL.$customer_uid,
                 $onetime_data,
-                array(self::TOKEN_HEADER . ': ' . $access_token)
+                array(self::TOKEN_HEADER.': '.$access_token)
             );
+
             return $response;
         } catch (IamportAuthException $e) {
             return new IamportResult(false, null, array('code' => $e->getCode(), 'message' => $e->getMessage()));
@@ -333,7 +345,7 @@ class IamportOld
     private function getResponse($request_url, $request_data = null)
     {
         $access_token = $this->getAccessCode();
-        $headers = array(self::TOKEN_HEADER . ': ' . $access_token, 'Content-Type: application/json');
+        $headers = array(self::TOKEN_HEADER.': '.$access_token, 'Content-Type: application/json');
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $request_url);
         curl_setopt($ch, CURLOPT_POST, false);
@@ -346,21 +358,22 @@ class IamportOld
         $r = json_decode(trim($body));
         curl_close($ch);
         if ($error_code > 0) {
-            throw new Exception("Request Error(HTTP STATUS : " . $status_code . ")", $error_code);
+            throw new Exception('Request Error(HTTP STATUS : '.$status_code.')', $error_code);
         }
         if (empty($r)) {
-            throw new Exception("API 서버로부터 응답이 올바르지 않습니다. " . $body, 1);
+            throw new Exception('API 서버로부터 응답이 올바르지 않습니다. '.$body, 1);
         }
         if ($r->code !== 0) {
             throw new IamportRequestException($r);
         }
+
         return $r->response;
     }
 
     private function postResponse($request_url, $post_data = array(), $headers = array())
     {
         $post_data_str = json_encode($post_data);
-        $default_header = array('Content-Type: application/json', 'Content-Length: ' . strlen($post_data_str));
+        $default_header = array('Content-Type: application/json', 'Content-Length: '.strlen($post_data_str));
         $headers = array_merge($default_header, $headers);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $request_url);
@@ -375,25 +388,26 @@ class IamportOld
         $r = json_decode(trim($body));
         curl_close($ch);
         if ($error_code > 0) {
-            throw new Exception("AccessCode Error(HTTP STATUS : " . $status_code . ")", $error_code);
+            throw new Exception('AccessCode Error(HTTP STATUS : '.$status_code.')', $error_code);
         }
         if (empty($r)) {
-            throw new Exception("API 서버로부터 응답이 올바르지 않습니다. " . $body, 1);
+            throw new Exception('API 서버로부터 응답이 올바르지 않습니다. '.$body, 1);
         }
         if ($r->code !== 0) {
             throw new IamportRequestException($r);
         }
+
         return $r->response;
     }
 
     private function deleteResponse($request_url, $delete_data = array(), $headers = array())
     {
         $post_data_str = json_encode($delete_data);
-        $default_header = array('Content-Type: application/json', 'Content-Length: ' . strlen($post_data_str));
+        $default_header = array('Content-Type: application/json', 'Content-Length: '.strlen($post_data_str));
         $headers = array_merge($default_header, $headers);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $request_url);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data_str);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -404,14 +418,15 @@ class IamportOld
         $r = json_decode(trim($body));
         curl_close($ch);
         if ($error_code > 0) {
-            throw new Exception("AccessCode Error(HTTP STATUS : " . $status_code . ")", $error_code);
+            throw new Exception('AccessCode Error(HTTP STATUS : '.$status_code.')', $error_code);
         }
         if (empty($r)) {
-            throw new Exception("API서버로부터 응답이 올바르지 않습니다. " . $body, 1);
+            throw new Exception('API서버로부터 응답이 올바르지 않습니다. '.$body, 1);
         }
         if ($r->code !== 0) {
             throw new IamportRequestException($r);
         }
+
         return $r->response;
     }
 
@@ -428,15 +443,16 @@ class IamportOld
                 self::GET_TOKEN_URL,
                 array(
                     'imp_key' => $this->imp_key,
-                    'imp_secret' => $this->imp_secret
+                    'imp_secret' => $this->imp_secret,
                 )
             );
             $offset = $response->expired_at - $response->now;
             $this->expired_at = time() + $offset;
             $this->access_token = $response->access_token;
+
             return $response->access_token;
         } catch (Exception $e) {
-            throw new IamportAuthException('[API 인증오류] ' . $e->getMessage(), $e->getCode());
+            throw new IamportAuthException('[API 인증오류] '.$e->getMessage(), $e->getCode());
         }
     }
 }

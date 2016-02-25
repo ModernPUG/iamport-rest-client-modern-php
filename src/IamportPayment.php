@@ -25,6 +25,7 @@ class IamportPayment
         if (is_null($name)) {
             return $this->custom_data;
         }
+
         return $this->custom_data->{$name};
     }
 }

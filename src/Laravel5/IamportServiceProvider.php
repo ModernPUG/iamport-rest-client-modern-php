@@ -10,7 +10,7 @@ class IamportServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/resources/config/iamport.php' => config_path('iamport.php'),
+            __DIR__.'/resources/config/iamport.php' => config_path('iamport.php'),
         ]);
     }
 
@@ -19,6 +19,7 @@ class IamportServiceProvider extends ServiceProvider
         $this->app->singleton(Iamport::class, function ($app) {
             $key = config('iamport.rest-client.key');
             $secret = config('iamport.rest-client.secret');
+
             return new Iamport($key, $secret);
         });
     }
