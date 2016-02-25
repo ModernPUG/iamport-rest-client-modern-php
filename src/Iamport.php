@@ -89,7 +89,7 @@ class Iamport
         $contents = $res->getBody()->getContents();
         $result = json_decode(trim($contents));
 
-        return $result->response;
+        return $result;
     }
 
     private function httpGet($url)
@@ -113,24 +113,16 @@ class Iamport
 
     public function getPaymentByImpId($id)
     {
-        $response = $this->httpGet(
+        return $this->httpGet(
             "https://api.iamport.kr/payments/$id"
         );
-
-        $payment_data = new IamportPayment($response);
-
-        return new IamportResult(true, $payment_data);
     }
 
     public function getPaymentByMerchantId($id)
     {
-        $response = $this->httpGet(
+        return $this->httpGet(
             "https://api.iamport.kr/payments/find/$id"
         );
-
-        $payment_data = new IamportPayment($response);
-
-        return new IamportResult(true, $payment_data);
     }
 
     public function getPaymentList($status = 'all', $page = null)
@@ -151,42 +143,34 @@ class Iamport
             ]);
         }
 
-        $response = $this->httpPost(
+        return $this->httpPost(
             'https://api.iamport.kr/payments/cancel/',
             $this->only($data, [
                 'amount', 'reason', 'refund_holder', 'refund_bank', 'refund_account',
             ])
         );
-
-        $payment_data = new IamportPayment($response);
-
-        return new IamportResult(true, $payment_data);
     }
 
     public function preparePayment($data)
     {
-        $response = $this->httpPost(
+        return $this->httpPost(
             'https://api.iamport.kr/payments/prepare/',
             $this->only($data, [
                 'token', 'merchant_uid', 'amount',
             ])
         );
-
-        return $response;
     }
 
     public function getPreparePayment($merchant_uid)
     {
-        $response = $this->httpGet(
+        return $this->httpGet(
             "https://api.iamport.kr/payments/prepare/$merchant_uid"
         );
-
-        return $response;
     }
 
     public function sbcr_onetime($data)
     {
-        $response = $this->httpPost(
+        return $this->httpPost(
             'https://api.iamport.kr/subscribe/payments/onetime/',
             $this->only($data, [
                 'token',
@@ -195,15 +179,11 @@ class Iamport
                 'buyer_name', 'buyer_email', 'buyer_tel', 'buyer_addr', 'buyer_postcode',
             ])
         );
-
-        $payment_data = new IamportPayment($response);
-
-        return new IamportResult(true, $payment_data);
     }
 
     public function sbcr_again($data)
     {
-        $response = $this->httpPost(
+        return $this->httpPost(
             'https://api.iamport.kr/subscribe/payments/again/',
             $this->only($data, [
                 'token',
@@ -211,66 +191,52 @@ class Iamport
                 'buyer_name', 'buyer_email', 'buyer_tel', 'buyer_addr', 'buyer_postcode',
             ])
         );
-
-        $payment_data = new IamportPayment($response);
-
-        return new IamportResult(true, $payment_data);
     }
 
     public function sbcr_schedule($data)
     {
         //TODO: schedules param 보내기 테스트 필요
-        $response = $this->httpPost(
+        return $this->httpPost(
             'https://api.iamport.kr/subscribe/payments/schedule/',
             $this->only($data, [
                 'token',
                 'customer_uid', 'checking_amount', 'card_number', 'expiry', 'birth', 'pwd_2digit', 'schedules',
             ])
         );
-
-        return $response;
     }
 
     public function sbcr_unschedule($data)
     {
-        $response = $this->httpPost(
+        return $this->httpPost(
             'https://api.iamport.kr/subscribe/payments/unschedule/',
             $this->only($data, [
                 'token', 'customer_uid', 'merchant_uid',
             ])
         );
-
-        return $response;
     }
 
     public function delete_subscribe_customers($customer_uid)
     {
-        $response = $this->httpDelete(
+        return $this->httpDelete(
             "https://api.iamport.kr/subscribe/customers/$customer_uid"
         );
-
-        return $response;
     }
 
     public function get_subscribe_customers($customer_uid)
     {
-        $response = $this->httpGet(
+        return $this->httpGet(
             "https://api.iamport.kr/subscribe/customers/$customer_uid"
         );
-
-        return $response;
     }
 
     public function post_subscribe_customers($customer_uid, $data)
     {
-        $response = $this->httpPost(
+        return $this->httpPost(
             "https://api.iamport.kr/subscribe/customers/$customer_uid",
             $this->only($data, [
                 'token', 'card_number', 'expiry', 'birth', 'pwd_2digit',
             ])
         );
-
-        return $response;
     }
 
     private function only($array, $keys)
