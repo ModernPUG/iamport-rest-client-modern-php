@@ -31,6 +31,7 @@ class LaravelCache implements CacheInterface
                 // LaravelCache 에 캐시되어 있어도 시간 정보를 얻어 만료됐으면 강제 만료시킨다
                 // LaravelCache 는 minutes 단위로 캐시 만료를 지정하기 때문에 정확하지 않아서 이렇게 사용 함
                 Cache::forget('access-token-info');
+
                 return null;
             }
 
