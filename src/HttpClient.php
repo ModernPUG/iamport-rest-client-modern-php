@@ -27,25 +27,22 @@ class HttpClient
         return $this->httpAuthCall('GET', $uri);
     }
 
-    public function httpPost($uri, $data = null)
-    {
-        return $this->httpAuthCall('POST', $uri, [
-            'body' => json_encode($data ?: []),
-        ]);
-    }
-
     public function httpDelete($uri)
     {
         return $this->httpAuthCall('DELETE', $uri);
     }
 
+    public function httpPost($uri, $data = null)
+    {
+        $data = $data ?: [];
+
+        return $this->httpAuthCall('POST', $uri, ['body' => json_encode($data)]);
+    }
+
     private function httpAuthCall($method, $uri, $options = [])
     {
-        $options = array_replace_recursive([
-            'headers' => [
-                'Authorization' => $this->getAccessCode(),
-            ],
-        ], ($options ?: []));
+        $options = $options ?: [];
+        $options = array_replace_recursive(['headers' => ['Authorization' => $this->getAccessCode()]], $options);
 
         return $this->httpJsonCall($method, $uri, $options);
     }
@@ -58,13 +55,11 @@ class HttpClient
                 return $accessToken;
             }
 
+            $body = json_encode(['imp_key' => $this->imp_key, 'imp_secret' => $this->imp_secret]);
             $response = $this->httpJsonCall(
-                'POST', 'https://api.iamport.kr/users/getToken', [
-                    'body' => json_encode([
-                        'imp_key' => $this->imp_key,
-                        'imp_secret' => $this->imp_secret,
-                    ]),
-                ]
+                'POST',
+                'https://api.iamport.kr/users/getToken',
+                ['body' => $body]
             );
             $response = $response->response;
 
