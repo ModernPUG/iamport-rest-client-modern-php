@@ -36,7 +36,7 @@ class HttpClient
     {
         $data = $data ?: [];
 
-        return $this->httpAuthCall('POST', $uri, ['body' => json_encode($data)]);
+        return $this->httpAuthCall('POST', $uri, ['json' => $data]);
     }
 
     private function httpAuthCall($method, $uri, $options = [])
@@ -57,11 +57,11 @@ class HttpClient
                 return $accessToken;
             }
 
-            $body = json_encode(['imp_key' => $this->imp_key, 'imp_secret' => $this->imp_secret]);
+            $body = ['imp_key' => $this->imp_key, 'imp_secret' => $this->imp_secret];
             $response = $this->httpJsonCall(
                 'POST',
                 'https://api.iamport.kr/users/getToken',
-                ['body' => $body]
+                ['json' => $body]
             );
             $response = $response->response;
 
