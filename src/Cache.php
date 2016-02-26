@@ -16,7 +16,7 @@ class Cache implements CacheInterface
         $this->expiresAt = null;
         $this->accessToken = null;
 
-        return null;
+        return $this->accessToken;
     }
 
     public function rememberAccessToken($accessToken, $expiresAt)

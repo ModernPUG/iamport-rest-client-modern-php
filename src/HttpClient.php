@@ -49,6 +49,8 @@ class HttpClient
 
     private function getAccessCode()
     {
+        $accessToken = null;
+
         try {
             $accessToken = $this->cache->getAccessToken();
             if ($accessToken) {
@@ -66,12 +68,13 @@ class HttpClient
             $accessToken = $response->access_token;
             $expiresAt = time() + $response->expired_at - $response->now;
             $this->cache->rememberAccessToken($accessToken, $expiresAt);
-
-            return $accessToken;
         } catch (Exception $e) {
             //todo: Exception 관련 처리
             //throw new IamportAuthException('[API 인증오류] '.$e->getMessage(), $e->getCode());
+            $accessToken = null;
         }
+
+        return $accessToken;
     }
 
     private function httpJsonCall($method, $uri, $options = [])
