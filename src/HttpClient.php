@@ -32,16 +32,13 @@ class HttpClient
         return $this->httpAuthCall('DELETE', $uri);
     }
 
-    public function httpPost($uri, $data = null)
+    public function httpPost($uri, array $data = [])
     {
-        $data = $data ?: [];
-
         return $this->httpAuthCall('POST', $uri, ['json' => $data]);
     }
 
-    private function httpAuthCall($method, $uri, $options = [])
+    private function httpAuthCall($method, $uri, array $options = [])
     {
-        $options = $options ?: [];
         $options = array_replace_recursive(['headers' => ['Authorization' => $this->getAccessCode()]], $options);
 
         return $this->httpJsonCall($method, $uri, $options);
@@ -77,13 +74,13 @@ class HttpClient
         return $accessToken;
     }
 
-    private function httpJsonCall($method, $uri, $options = [])
+    private function httpJsonCall($method, $uri, array $options = [])
     {
         $options = array_replace_recursive([
             'headers' => [
                 'Content-Type' => 'application/json',
             ],
-        ], ($options ?: []));
+        ], $options);
 
         $response = $this->httpCall($method, $uri, $options);
         $contents = $response->getBody()->getContents();
@@ -92,8 +89,8 @@ class HttpClient
         return $result;
     }
 
-    private function httpCall($method, $uri, $options = [])
+    private function httpCall($method, $uri, array $options = [])
     {
-        return $this->client->request($method, $uri, ($options ?: []));
+        return $this->client->request($method, $uri, $options);
     }
 }

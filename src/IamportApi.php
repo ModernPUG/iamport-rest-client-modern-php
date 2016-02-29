@@ -32,7 +32,7 @@ class IamportApi
         );
     }
 
-    public function cancel($data)
+    public function cancel(array $data)
     {
         //TODO: imp_uid, merchant_uid 둘 다 없는 경우 서버에서 무엇을 주길래 이런 처리가 되어 있을까?
         if (!isset($data['imp_uid']) && !isset($data['merchant_uid'])) {
@@ -55,7 +55,7 @@ class IamportApi
         );
     }
 
-    public function preparePayment($data)
+    public function preparePayment(array $data)
     {
         return $this->client->httpPost(
             'https://api.iamport.kr/payments/prepare/',
@@ -74,7 +74,7 @@ class IamportApi
         );
     }
 
-    public function sbcr_onetime($data)
+    public function sbcr_onetime(array $data)
     {
         return $this->client->httpPost(
             'https://api.iamport.kr/subscribe/payments/onetime/',
@@ -119,7 +119,7 @@ class IamportApi
         );
     }
 
-    public function sbcr_schedule($data)
+    public function sbcr_schedule(array $data)
     {
         //TODO: schedules param 보내기 테스트 필요
         return $this->client->httpPost(
@@ -137,7 +137,7 @@ class IamportApi
         );
     }
 
-    public function sbcr_unschedule($data)
+    public function sbcr_unschedule(array $data)
     {
         return $this->client->httpPost(
             'https://api.iamport.kr/subscribe/payments/unschedule/',
@@ -163,7 +163,7 @@ class IamportApi
         );
     }
 
-    public function post_subscribe_customers($customer_uid, $data)
+    public function post_subscribe_customers($customer_uid, array $data)
     {
         return $this->client->httpPost(
             "https://api.iamport.kr/subscribe/customers/$customer_uid",
@@ -177,7 +177,7 @@ class IamportApi
         );
     }
 
-    private function only($array, $keys)
+    private function only(array $array, $keys)
     {
         return array_intersect_key($array, array_flip((array)$keys));
     }
