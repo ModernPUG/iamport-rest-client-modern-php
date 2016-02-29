@@ -28,7 +28,7 @@ class IamportApi
     public function getPaymentList($status = 'all', $page = null)
     {
         return $this->client->httpGet(
-            "https://api.iamport.kr/payments/status/$status".($page ? "?page=$page" : '')
+            "https://api.iamport.kr/payments/status/$status" . ($page ? "?page=$page" : '')
         );
     }
 
@@ -46,7 +46,11 @@ class IamportApi
         return $this->client->httpPost(
             'https://api.iamport.kr/payments/cancel/',
             $this->only($data, [
-                'amount', 'reason', 'refund_holder', 'refund_bank', 'refund_account',
+                'amount',
+                'reason',
+                'refund_holder',
+                'refund_bank',
+                'refund_account',
             ])
         );
     }
@@ -57,7 +61,8 @@ class IamportApi
             'https://api.iamport.kr/payments/prepare/',
             $this->only($data, [
                 'token',
-                'merchant_uid', 'amount',
+                'merchant_uid',
+                'amount',
             ])
         );
     }
@@ -75,10 +80,21 @@ class IamportApi
             'https://api.iamport.kr/subscribe/payments/onetime/',
             $this->only($data, [
                 'token',
-                'merchant_uid', 'amount', 'vat',
-                'card_number', 'expiry', 'birth', 'pwd_2digit', 'remember_me',
-                'customer_uid', 'name',
-                'buyer_name', 'buyer_email', 'buyer_tel', 'buyer_addr', 'buyer_postcode',
+                'merchant_uid',
+                'amount',
+                'vat',
+                'card_number',
+                'expiry',
+                'birth',
+                'pwd_2digit',
+                'remember_me',
+                'customer_uid',
+                'name',
+                'buyer_name',
+                'buyer_email',
+                'buyer_tel',
+                'buyer_addr',
+                'buyer_postcode',
             ])
         );
     }
@@ -90,8 +106,15 @@ class IamportApi
             $this->only($data, [
                 'token',
                 'customer_uid',
-                'merchant_uid', 'amount', 'vat', 'name',
-                'buyer_name', 'buyer_email', 'buyer_tel', 'buyer_addr', 'buyer_postcode',
+                'merchant_uid',
+                'amount',
+                'vat',
+                'name',
+                'buyer_name',
+                'buyer_email',
+                'buyer_tel',
+                'buyer_addr',
+                'buyer_postcode',
             ])
         );
     }
@@ -103,8 +126,12 @@ class IamportApi
             'https://api.iamport.kr/subscribe/payments/schedule/',
             $this->only($data, [
                 'token',
-                'customer_uid', 'checking_amount',
-                'card_number', 'expiry', 'birth', 'pwd_2digit',
+                'customer_uid',
+                'checking_amount',
+                'card_number',
+                'expiry',
+                'birth',
+                'pwd_2digit',
                 'schedules',
             ])
         );
@@ -116,7 +143,8 @@ class IamportApi
             'https://api.iamport.kr/subscribe/payments/unschedule/',
             $this->only($data, [
                 'token',
-                'customer_uid', 'merchant_uid',
+                'customer_uid',
+                'merchant_uid',
             ])
         );
     }
@@ -141,13 +169,16 @@ class IamportApi
             "https://api.iamport.kr/subscribe/customers/$customer_uid",
             $this->only($data, [
                 'token',
-                'card_number', 'expiry', 'birth', 'pwd_2digit',
+                'card_number',
+                'expiry',
+                'birth',
+                'pwd_2digit',
             ])
         );
     }
 
     private function only($array, $keys)
     {
-        return array_intersect_key($array, array_flip((array) $keys));
+        return array_intersect_key($array, array_flip((array)$keys));
     }
 }
