@@ -2,7 +2,6 @@
 
 namespace ModernPUG\Iamport;
 
-use Exception;
 use GuzzleHttp\Client as Guzzle;
 
 class HttpClient
@@ -41,9 +40,9 @@ class HttpClient
     {
         try {
             $options = array_replace_recursive(['headers' => ['Authorization' => $this->getAccessCode()]], $options);
-        } catch (Exception $e) {
-            //TODO: Exception 관련 처리
-            // 인증 실패 처리
+        } catch (\Exception $e) {
+            // TODO 상세 처리 필요
+            throw new Exception\AuthException($e->getMessage(), $e->getCode(), $e);
         }
         return $this->jsonRequest($method, $uri, $options);
     }
@@ -102,17 +101,12 @@ class HttpClient
         ], $options);
     }
 
-    /**
-     * @param $response
-     * @return mixed
-     * @throws Exception
-     */
     private function handleResponse($response)
     {
         if ($response->code != 0) {
             // has something problem, see the message
-            // TODO: wrap Custom Exception?
-            throw new Exception($response->message, $response->code);
+            // TODO: wrap Custom RuntimeException?
+            throw new Exception\RuntimeException($response->message, $response->code);
         }
         // or ? OK
         return $response->response;

@@ -25,7 +25,7 @@ class IamportApi
         );
     }
 
-    public function getPaymentList($status = 'all', $page = null)
+    public function getPaymentPage($status = 'all', $page = null)
     {
         return $this->client->httpGet(
             "https://api.iamport.kr/payments/status/$status" . ($page ? "?page=$page" : '')
