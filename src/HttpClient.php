@@ -24,73 +24,97 @@ class HttpClient
 
     public function httpGet($uri)
     {
-        return $this->httpAuthCall('GET', $uri);
+        return $this->authJsonRequest('GET', $uri);
     }
 
     public function httpDelete($uri)
     {
-        return $this->httpAuthCall('DELETE', $uri);
+        return $this->authJsonRequest('DELETE', $uri);
     }
 
     public function httpPost($uri, array $data = [])
     {
-        return $this->httpAuthCall('POST', $uri, ['json' => $data]);
+        return $this->authJsonRequest('POST', $uri, ['json' => $data]);
     }
 
-    private function httpAuthCall($method, $uri, array $options = [])
+    private function authJsonRequest($method, $uri, array $options = [])
     {
-        $options = array_replace_recursive(['headers' => ['Authorization' => $this->getAccessCode()]], $options);
-
-        return $this->httpJsonCall($method, $uri, $options);
+        try {
+            $options = array_replace_recursive(['headers' => ['Authorization' => $this->getAccessCode()]], $options);
+        } catch (Exception $e) {
+            //TODO: Exception 관련 처리
+            // 인증 실패 처리
+        }
+        return $this->jsonRequest($method, $uri, $options);
     }
 
     private function getAccessCode()
     {
         $accessToken = null;
 
-        try {
-            $accessToken = $this->cache->getAccessToken();
-            if ($accessToken) {
-                return $accessToken;
-            }
-
-            $body = ['imp_key' => $this->imp_key, 'imp_secret' => $this->imp_secret];
-            $response = $this->httpJsonCall(
-                'POST',
-                'https://api.iamport.kr/users/getToken',
-                ['json' => $body]
-            );
-            $response = $response->response;
-
-            $accessToken = $response->access_token;
-            $expiresAt = time() + $response->expired_at - $response->now;
-            $this->cache->rememberAccessToken($accessToken, $expiresAt);
-        } catch (Exception $e) {
-            //todo: Exception 관련 처리
-            //throw new IamportAuthException('[API 인증오류] '.$e->getMessage(), $e->getCode());
-            $accessToken = null;
+        $accessToken = $this->cache->getAccessToken();
+        if ($accessToken) {
+            return $accessToken;
         }
 
+        $response = $this->jsonRequest(
+            'POST',
+            'https://api.iamport.kr/users/getToken',
+            [
+                'json' =>
+                    [
+                        'imp_key' => $this->imp_key,
+                        'imp_secret' => $this->imp_secret
+                    ]
+            ]
+        );
+
+        $expiresAt = time() + $response->expired_at - $response->now;
+        $accessToken = $response->access_token;
+        $this->cache->rememberAccessToken($accessToken, $expiresAt);
         return $accessToken;
     }
 
-    private function httpJsonCall($method, $uri, array $options = [])
+    private function jsonRequest($method, $uri, array $options = [])
     {
-        $options = array_replace_recursive([
+        $options = $this->jsonOption($options);
+        $response = $this->request($method, $uri, $options);
+        $contents = $response->getBody()->getContents();
+        $result = json_decode(trim($contents));
+        return $this->handleResponse($result);
+    }
+
+    private function request($method, $uri, array $options = [])
+    {
+        return $this->client->request($method, $uri, $options);
+    }
+
+    /**
+     * @param array $options
+     * @return array
+     */
+    private function jsonOption(array $options)
+    {
+        return array_replace_recursive([
             'headers' => [
                 'Content-Type' => 'application/json',
             ],
         ], $options);
-
-        $response = $this->httpCall($method, $uri, $options);
-        $contents = $response->getBody()->getContents();
-        $result = json_decode(trim($contents));
-
-        return $result;
     }
 
-    private function httpCall($method, $uri, array $options = [])
+    /**
+     * @param $response
+     * @return mixed
+     * @throws Exception
+     */
+    private function handleResponse($response)
     {
-        return $this->client->request($method, $uri, $options);
+        if ($response->code != 0) {
+            // has something problem, see the message
+            // TODO: wrap Custom Exception?
+            throw new Exception($response->message, $response->code);
+        }
+        // or ? OK
+        return $response->response;
     }
 }
