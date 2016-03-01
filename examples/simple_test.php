@@ -16,6 +16,7 @@ try {
     echo 'PAYMENTS_STATUS<br>';
     dump($paymentPage);
     $payments = $paymentPage->list;
+    dump($payments);
 
     $selectedItem = $payments[0];
     $paidItem = '';
