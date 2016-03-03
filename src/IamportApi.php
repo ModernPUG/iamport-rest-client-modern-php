@@ -27,17 +27,6 @@ class IamportApi
 
     /**
      * @param string $status
-     * @param null $page
-     * @return mixed
-     * @deprecated use getPaymentPage
-     */
-    public function getPaymentList($status = 'all', $page = null)
-    {
-        return $this->getPaymentPage($status, $page);
-    }
-
-    /**
-     * @param string $status
      * @param integer $page
      * @return PaymentPage
      */
