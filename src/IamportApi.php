@@ -90,7 +90,7 @@ class IamportApi
         );
     }
 
-    public function sbcr_onetime(array $data)
+    public function subscribeOnetime(array $data)
     {
         return $this->client->httpPost(
             'https://api.iamport.kr/subscribe/payments/onetime/',
@@ -115,7 +115,7 @@ class IamportApi
         );
     }
 
-    public function sbcr_again($data)
+    public function subscribeAgain($data)
     {
         return $this->client->httpPost(
             'https://api.iamport.kr/subscribe/payments/again/',
@@ -135,7 +135,7 @@ class IamportApi
         );
     }
 
-    public function sbcr_schedule(array $data)
+    public function subscribeSchedule(array $data)
     {
         //TODO: schedules param 보내기 테스트 필요
         return $this->client->httpPost(
@@ -153,7 +153,7 @@ class IamportApi
         );
     }
 
-    public function sbcr_unschedule(array $data)
+    public function subscribeUnschedule(array $data)
     {
         return $this->client->httpPost(
             'https://api.iamport.kr/subscribe/payments/unschedule/',
@@ -165,21 +165,21 @@ class IamportApi
         );
     }
 
-    public function delete_subscribe_customers($customer_uid)
+    public function deleteSubscribeCustomers($customer_uid)
     {
         return $this->client->httpDelete(
             "https://api.iamport.kr/subscribe/customers/$customer_uid"
         );
     }
 
-    public function get_subscribe_customers($customer_uid)
+    public function getSubscribeCustomers($customer_uid)
     {
         return $this->client->httpGet(
             "https://api.iamport.kr/subscribe/customers/$customer_uid"
         );
     }
 
-    public function post_subscribe_customers($customer_uid, array $data)
+    public function postSubscribeCustomers($customer_uid, array $data)
     {
         return $this->client->httpPost(
             "https://api.iamport.kr/subscribe/customers/$customer_uid",
