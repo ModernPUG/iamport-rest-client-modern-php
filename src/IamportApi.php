@@ -36,6 +36,11 @@ class IamportApi
         return $this->getPaymentPage($status, $page);
     }
 
+    /**
+     * @param string $status
+     * @param integer $page
+     * @return PaymentPage
+     */
     public function getPaymentPage($status = 'all', $page = null)
     {
         return $this->client->httpGet(
