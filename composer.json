@@ -1,6 +1,7 @@
 {
     "name": "modern-pug/iamport-rest-client-modern-php",
     "license": "MIT",
+    "type": "library",
     "require": {
         "php": ">=5.5.9",
         "guzzlehttp/guzzle": "^6.1"
