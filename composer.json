@@ -1,5 +1,5 @@
 {
-    "name": "modern-pug/iamport-rest-client-modern-php",
+    "name": "modern-pug/iamport-rest-client",
     "license": "MIT",
     "type": "library",
     "require": {
@@ -11,9 +11,15 @@
             "ModernPUG\\Iamport\\": "src/"
         }
     },
-    "minimum-stability": "dev",
     "require-dev": {
         "vlucas/phpdotenv": "^2.2",
-        "symfony/var-dumper": "^3.0"
+        "symfony/var-dumper": "^3.0",
+        "illuminate/support": "^5.3",
+        "phpunit/phpunit": "^5.7"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ModernPUG\\Iamport\\": "tests/"
+        }
     }
 }

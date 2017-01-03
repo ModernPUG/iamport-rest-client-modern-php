@@ -3,112 +3,135 @@
 namespace ModernPUG\Iamport;
 
 use GuzzleHttp\Client as Guzzle;
+use GuzzleHttp\Exception\ClientException;
+use Psr\Http\Message\ResponseInterface;
 
 class HttpClient
 {
-    private $imp_key = null;
-    private $imp_secret = null;
-
+    /** @var \ModernPUG\Iamport\Configuration */
+    protected $config;
+    
+    /** @var \ModernPUG\Iamport\CacheInterface */
     private $cache;
+    
+    /** @var \GuzzleHttp\Client */
     private $client;
-
-    public function __construct($imp_key, $imp_secret, CacheInterface $cache, Guzzle $client = null)
+    
+    public function __construct(Configuration $config, CacheInterface $cache = null, Guzzle $client = null)
     {
-        $this->imp_key = $imp_key;
-        $this->imp_secret = $imp_secret;
-
-        $this->cache = $cache;
+        $this->config = $config;
+        $this->cache = $cache ?: new Cache();
         $this->client = $client ?: new Guzzle();
     }
 
+    /**
+     * @param string $uri
+     * @return array
+     */
     public function httpGet($uri)
     {
-        return $this->authJsonRequest('GET', $uri);
+        return $this->requestWithAuth('GET', $uri);
     }
 
+    /**
+     * @param string $uri
+     * @return array
+     */
     public function httpDelete($uri)
     {
-        return $this->authJsonRequest('DELETE', $uri);
+        return $this->requestWithAuth('DELETE', $uri);
     }
 
-    public function httpPost($uri, array $data = [])
+    /**
+     * @param string $uri
+     * @param array $formData
+     * @return array
+     */
+    public function httpPost($uri, array $formData = [])
     {
-        return $this->authJsonRequest('POST', $uri, ['json' => $data]);
+        return $this->requestWithAuth('POST', $uri, $formData);
     }
 
-    private function authJsonRequest($method, $uri, array $options = [])
+    /**
+     * @param string $method
+     * @param string $uri
+     * @param array $formData
+     * @return array
+     */
+    private function requestWithAuth($method, $uri, array $formData = [])
     {
         try {
-            $options = array_replace_recursive(['headers' => ['Authorization' => $this->getAccessCode()]], $options);
+            $authToken = $this->getAuthToken();
         } catch (\Exception $e) {
             // TODO 상세 처리 필요
             throw new Exception\AuthException($e->getMessage(), $e->getCode(), $e);
         }
-        return $this->jsonRequest($method, $uri, $options);
+        return $this->requestViaJson($method, $uri, $formData, [
+            'Authorization' => $authToken,
+        ]);
     }
 
-    private function getAccessCode()
+    /**
+     * @return ?string
+     */
+    public function getAuthToken()
     {
-        $accessToken = null;
-
         $accessToken = $this->cache->getAccessToken();
         if ($accessToken) {
             return $accessToken;
         }
 
-        $response = $this->jsonRequest(
-            'POST',
-            'https://api.iamport.kr/users/getToken',
-            [
-                'json' =>
-                    [
-                        'imp_key' => $this->imp_key,
-                        'imp_secret' => $this->imp_secret
-                    ]
-            ]
-        );
+        $response = $this->requestViaJson('POST', "/users/getToken", [
+            'imp_key' => $this->config->getImpKey(),
+            'imp_secret' => $this->config->getImpSecret(),
+        ]);
 
-        $expiresAt = time() + $response->expired_at - $response->now;
-        $accessToken = $response->access_token;
+        $expiresAt = time() + $response['expired_at'] - $response['now'];
+        $accessToken = $response['access_token'];
         $this->cache->rememberAccessToken($accessToken, $expiresAt);
         return $accessToken;
     }
 
-    private function jsonRequest($method, $uri, array $options = [])
+    /**
+     * @param string $method
+     * @param string $uri
+     * @param array $formData
+     * @param array $headers
+     * @return array
+     */
+    protected function requestViaJson($method, $uri, array $formData = [], array $headers = [])
     {
-        $options = $this->jsonOption($options);
-        $response = $this->request($method, $uri, $options);
-        $contents = $response->getBody()->getContents();
-        $result = json_decode(trim($contents));
-        return $this->handleResponse($result);
-    }
-
-    private function request($method, $uri, array $options = [])
-    {
-        return $this->client->request($method, $uri, $options);
+        try {
+            $response = $this->client->request($method, "{$this->config->getHost()}{$uri}", [
+                'headers' => $headers + [
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => $formData
+            ]);
+        } catch (ClientException $e) {
+            $body = $this->getContentsFromResponse($e->getResponse());
+            $code = isset($body['code']) ? $body['code'] : 0;
+            $message = isset($body['message']) ? $body['message'] : '알 수 없는 에러가 발생하였습니다.';
+            throw new Exception\RuntimeException($message, $code);
+        }
+        $result = $this->getContentsFromResponse($response);
+        if ($result['code'] != 0) {
+            throw new Exception\RuntimeException($result['message'], $result['code']);
+        }
+        return $result['response'];
     }
 
     /**
-     * @param array $options
+     * @param \Psr\Http\Message\ResponseInterface $response
      * @return array
      */
-    private function jsonOption(array $options)
+    private function getContentsFromResponse(ResponseInterface $response = null)
     {
-        return array_replace_recursive([
-            'headers' => [
-                'Content-Type' => 'application/json',
-            ],
-        ], $options);
-    }
-
-    private function handleResponse($response)
-    {
-        if ($response->code != 0) {
-            // has something problem, see the message
-            // TODO: wrap Custom RuntimeException?
-            throw new Exception\RuntimeException($response->message, $response->code);
-        }
-        // or ? OK
-        return $response->response;
+        if (!$response) return [];
+        $body = $response->getBody();
+        if (!$body) return [];
+        $contents = $body->__toString(); // getContents는 fp에 따라서 부분값이 나올 여지가 있습니다.
+        if (!$contents) return [];
+        return @json_decode(trim($contents), true) ?: [];
     }
 }

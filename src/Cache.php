@@ -7,6 +7,9 @@ class Cache implements CacheInterface
     private $expiresAt = null;
     private $accessToken = null;
 
+    /**
+     * {@inheritdoc}
+     */
     public function getAccessToken()
     {
         $now = time();
@@ -19,6 +22,9 @@ class Cache implements CacheInterface
         return null;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rememberAccessToken($accessToken, $expiresAt)
     {
         $this->accessToken = $accessToken;
