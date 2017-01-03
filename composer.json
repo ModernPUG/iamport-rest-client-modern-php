@@ -1,5 +1,5 @@
 {
-    "name": "modern-pug/iamport-rest-client-modern-php",
+    "name": "modern-pug/iamport-rest-client",
     "license": "MIT",
     "type": "library",
     "require": {
