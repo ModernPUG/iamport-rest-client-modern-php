@@ -18,8 +18,8 @@ class IamportServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(IamportApi::class, function ($app) {
-            $key = config('iamport.rest-client.key');
-            $secret = config('iamport.rest-client.secret');
+            $key = config('iamport.rest_client.key');
+            $secret = config('iamport.rest_client.secret');
 
             $cache = new LaravelCache();
             $httpClient = new HttpClient($key, $secret, $cache);
