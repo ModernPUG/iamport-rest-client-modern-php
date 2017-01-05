@@ -54,11 +54,16 @@ class IamportApi
             "/payments/status/{$status}" . ($page ? "?page={$page}" : '')
         );
     }
-    
+
+    /**
+     * @deprecated use cancelByImpUid or cancelByMerchantUid
+     * @param array $data
+     * @return array
+     */
     public function cancel(array $data)
     {
         //TODO: imp_uid, merchant_uid 둘 다 없는 경우 서버에서 무엇을 주길래 이런 처리가 되어 있을까?
-        if (!isset($data['imp_uid']) && !isset($data['merchant_uid'])) {
+        if (!isset($data['imp_uid']) || !isset($data['merchant_uid'])) {
             return [
                 'code' => '',
                 'message' => '취소하실 imp_uid 또는 merchant_uid 중 하나를 지정하셔야 합니다.',
@@ -76,6 +81,44 @@ class IamportApi
                 'refund_account',
             ])
         );
+    }
+
+    /**
+     * @param string $impUid
+     * @param string $reason
+     * @param string $refundBank
+     * @param string $refundAccount
+     * @param string $refundHolder
+     * @return array
+     */
+    public function cancelByImpUid($impUid, $reason = '', $refundBank = null, $refundAccount = null, $refundHolder = null)
+    {
+        return $this->client->httpPost('/payments/cancel', [
+            'imp_uid' => $impUid,
+            'reason' => $reason,
+            'refund_bank' => $refundBank,
+            'refund_account' => $refundAccount,
+            'refund_holder' => $refundHolder,
+        ]);
+    }
+
+    /**
+     * @param string $merchantUid
+     * @param string $reason
+     * @param string $refundBank
+     * @param string $refundAccount
+     * @param string $refundHolder
+     * @return array
+     */
+    public function cancelByMerchantUid($merchantUid, $reason = '', $refundBank = null, $refundAccount = null, $refundHolder = null)
+    {
+        return $this->client->httpPost('/payments/cancel', [
+            'merchant_uid' => $merchantUid,
+            'reason' => $reason,
+            'refund_bank' => $refundBank,
+            'refund_account' => $refundAccount,
+            'refund_holder' => $refundHolder,
+        ]);
     }
 
     public function preparePayment(array $data)
