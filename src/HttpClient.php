@@ -26,10 +26,14 @@ class HttpClient
 
     /**
      * @param string $uri
+     * @param array $queries
      * @return array
      */
-    public function httpGet($uri)
+    public function httpGet($uri, array $queries = [])
     {
+        if (count($queries)) {
+            $uri .= '?' . http_build_query($queries);
+        }
         return $this->requestWithAuth('GET', $uri);
     }
 

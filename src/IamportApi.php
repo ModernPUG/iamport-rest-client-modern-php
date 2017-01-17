@@ -93,7 +93,29 @@ class IamportApi
      */
     public function cancelByImpUid($impUid, $reason = '', $refundBank = null, $refundAccount = null, $refundHolder = null)
     {
+        $this->cancelPartialByImpUid(
+            $impUid,
+            null,
+            $reason,
+            $refundBank,
+            $refundAccount,
+            $refundHolder
+        );
+    }
+
+    /**
+     * @param string $impUid
+     * @param int $amount
+     * @param string $reason
+     * @param string $refundBank
+     * @param string $refundAccount
+     * @param string $refundHolder
+     * @return array
+     */
+    public function cancelPartialByImpUid($impUid, $amount = null, $reason = '', $refundBank = null, $refundAccount = null, $refundHolder = null)
+    {
         return $this->client->httpPost('/payments/cancel', [
+            'amount' => $amount,
             'imp_uid' => $impUid,
             'reason' => $reason,
             'refund_bank' => $refundBank,
@@ -112,8 +134,30 @@ class IamportApi
      */
     public function cancelByMerchantUid($merchantUid, $reason = '', $refundBank = null, $refundAccount = null, $refundHolder = null)
     {
+        $this->cancelPartialByMerchantUid(
+            $merchantUid,
+            null,
+            $reason,
+            $refundBank,
+            $refundAccount,
+            $refundHolder
+        );
+    }
+
+    /**
+     * @param string $merchantUid
+     * @param int $amount
+     * @param string $reason
+     * @param string $refundBank
+     * @param string $refundAccount
+     * @param string $refundHolder
+     * @return array
+     */
+    public function cancelPartialByMerchantUid($merchantUid, $amount = null, $reason = '', $refundBank = null, $refundAccount = null, $refundHolder = null)
+    {
         return $this->client->httpPost('/payments/cancel', [
             'merchant_uid' => $merchantUid,
+            'amount' => $amount,
             'reason' => $reason,
             'refund_bank' => $refundBank,
             'refund_account' => $refundAccount,
